@@ -6,7 +6,7 @@
 	$baseURL = getenv('CURATOR_HOME');
 	$homeURL = getenv('UPLOADER_HOME');
 
-	header('Access-Control-Allow-Origin: *'); 
+	header('Access-Control-Allow-Origin: *');
 	header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
 	header('Access-Control-Allow-Methods: Content-Type');
 ?>
@@ -23,10 +23,10 @@
 		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-		<link rel="stylesheet" href="jquery-ui/css/jquery-ui.css">		
-		
-  		<link rel="stylesheet" href="css/style.css">		
-  		<link rel="stylesheet" href="css/login.css">		
+		<link rel="stylesheet" href="jquery-ui/css/jquery-ui.css">
+
+  		<link rel="stylesheet" href="css/style.css">
+  		<link rel="stylesheet" href="css/login.css">
 		<link rel="stylesheet" href="jstree/themes/default/style.min.css" />
  		<!--[if lt IE 9]>
 		  <script src="bootstrap/js/html5shiv.min.js"></script>
@@ -37,9 +37,10 @@
 		<div class="container">
 
 			<div class="header clearfix"></div>
-			<div class="panel-group" id="accordion1">
+			<div class="panel-group" id="accordion1" align="center">
+                <img src="images/atom.jpg" width="35%" align="middle"/>
 				<div class="panel panel-default">
-					<div class="panel-heading panel-info ">
+                    <div class="panel-heading panel-info ">
 						<h3 class="panel-title">
 							<center>4CeeD Uploader </center>
 						</h3>
@@ -51,7 +52,7 @@
 				<span class="sr-only">Error:</span>
 				User not authorized. <br />
 				Please create an account, or reset your password in the 4CeeD <a href="<?= $baseURL ?>">curator.</a>
-			</div>				
+			</div>
 			<div class="jumbotron">
 				<form method="" id="formLogin" action="">
 					<div id="" class="tab-pane">
@@ -62,17 +63,12 @@
 						<div class="form-group">
 							<label>Password:</label>
 							<input type="password" id="password" name="password" class="form-control" required>
-						</div>				
+						</div>
 						<div class="form-group">
-							<input id="btnLogin" type="button" value="Sign In" class="btn btn-warning btn-lg"/>		
-						</div>		
+							<input id="btnLogin" type="button" value="Sign In" class="btn btn-warning btn-lg"/>
+						</div>
 					</div>
 				</form>
-				<hr />
-				<div class="form-group">
-					<h5 style="text-align:center;">Don't have an account? <a href="<?= $baseURL ?>signup">Sign up.</a></h5>
-				</div>
-
 			</div>
 			<footer class="footer">
 			</footer>
@@ -83,7 +79,7 @@
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<!-- Latest compiled and minified JavaScript -->
 		<script src="bootstrap/js/bootstrap.min.js"></script>
-		<script src="jquery-validate/js/jquery.validate.min.js"></script>	
+		<script src="jquery-validate/js/jquery.validate.min.js"></script>
 		<script>
 
 			//center container login and sets focus to username
@@ -94,34 +90,34 @@
 			    return this;
 			}
 
-			$("#username").focus(); 
+			$("#username").focus();
 			$(".container").center();
 
 			//Listener for button click or enter key press
 			$("#btnLogin").on("click", function(){
-				
+
 				//LOCAL
-				// var clowderURL = "http://127.0.0.1:9000/api/"; 
-				// var baseURL = "http://127.0.0.1:9000/"; 
+				// var clowderURL = "http://127.0.0.1:9000/api/";
+				// var baseURL = "http://127.0.0.1:9000/";
 				// var homeURL = "http://127.0.0.1:8888/4ceeduploader";
-			
+
 				//REMOTE
-				var clowderURL = "<?= $clowderURL ?>"; 
+				var clowderURL = "<?= $clowderURL ?>";
 				var baseURL = "<?= $baseURL ?>";
 				var homeURL = "<?= $homeURL ?>";
-			
-				var username = $("#username").val(); 
-				var password = $("#password").val(); 
+
+				var username = $("#username").val();
+				var password = $("#password").val();
 
 				if ($('#formLogin').valid()){
-					getAuth(username, password, clowderURL, baseURL, homeURL); 
-				} 			
+					getAuth(username, password, clowderURL, baseURL, homeURL);
+				}
 
 			});
 
 			$("input").keypress(function(event) {
 			    if (event.which == 13) {
-			    	$("#btnLogin").click(); 
+			    	$("#btnLogin").click();
 			    }
 			});
 
@@ -132,46 +128,46 @@
 					url: clowderURL+"me",
 					dataType: "json",
 					beforeSend: function(xhr){
-						xhr.setRequestHeader("Content-Type", "application/json"); 
+						xhr.setRequestHeader("Content-Type", "application/json");
 						xhr.setRequestHeader("Accept", "application/json");
 						xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-					}, 
+					},
 					success: function(data) {
 						//Create client side sessions variables to hold login and response data
 						sessionStorage.setItem("username", username);
 						sessionStorage.setItem("password", password);
-					    sessionStorage.setItem("fullname", data.fullName);		
-						sessionStorage.setItem("clowderURL", clowderURL);		
-						sessionStorage.setItem("baseURL", baseURL);		
-						sessionStorage.setItem("homeURL", homeURL);		
+					    sessionStorage.setItem("fullname", data.fullName);
+						sessionStorage.setItem("clowderURL", clowderURL);
+						sessionStorage.setItem("baseURL", baseURL);
+						sessionStorage.setItem("homeURL", homeURL);
 
-						createSession(username, password, data.fullName, clowderURL, baseURL, homeURL); 
-					}, 
+						createSession(username, password, data.fullName, clowderURL, baseURL, homeURL);
+					},
 					error: function(xhr, status, error) {
 						$("#displayMsg").show()
-					}	
+					}
 				});
 
 			}
 
-			//Create PHP sessions variables to redirect unauthorized users 
+			//Create PHP sessions variables to redirect unauthorized users
 			function createSession(username, password, fullname, clowderURL, baseURL, homeURL) {
 
 				$.ajax({
 				    type: 'POST',
 				    url: 'session_setter.php',
-				    data: {username: username, password: password, fullname: fullname, clowderURL: clowderURL, baseURL:  baseURL, homeURL: homeURL}, 
+				    data: {username: username, password: password, fullname: fullname, clowderURL: clowderURL, baseURL:  baseURL, homeURL: homeURL},
 					success: function(data) {
-						window.location.href = homeURL; 			
-					}, 
+						window.location.href = homeURL;
+					},
 					error: function(xhr, status, error) {
 						$("#displayMsg").show()
-					}	
+					}
 
-				}); 
+				});
 			}
 
-		</script>	
+		</script>
 
 	</body>
 </html>

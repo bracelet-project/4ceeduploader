@@ -1,30 +1,30 @@
 //Populate colection and dataset menus on load
 $(document).ready(function() {
-	//These need to be set 
-	username = sessionStorage.getItem('username');	
-	password = sessionStorage.getItem('password');	
-	fullname = sessionStorage.getItem('fullname');	
-	author = sessionStorage.getItem('username');	
-	clowderURL = sessionStorage.getItem('clowderURL');	
-	baseURL = sessionStorage.getItem('baseURL');	
+	//These need to be set
+	username = sessionStorage.getItem('username');
+	password = sessionStorage.getItem('password');
+	fullname = sessionStorage.getItem('fullname');
+	author = sessionStorage.getItem('username');
+	clowderURL = sessionStorage.getItem('clowderURL');
+	baseURL = sessionStorage.getItem('baseURL');
 
-	$("#fileSubmit").hide(); 
-	$("#formGetDatasets").hide(); 
+	$("#fileSubmit").hide();
+	$("#formGetDatasets").hide();
 
 	//disable ds and file divs
 	$(".username").text(fullname);
 	$(".username").css('text-transform', 'capitalize');
 
 	//load collection
-	getCollections(); 
-    $('[data-toggle="popover"]').popover(); 
-	setDatasetID = ""; 
+	getCollections();
+    $('[data-toggle="popover"]').popover();
+	setDatasetID = "";
 
 });
 
 function hideDivs() {
-	$("#fileSubmit").hide(); 
-	$("#formGetDatasets").hide(); 
+	$("#fileSubmit").hide();
+	$("#formGetDatasets").hide();
 }
 
 // setup the dialog and handle user idleness
@@ -71,32 +71,32 @@ $.idleTimeout('#dialog', 'div.ui-dialog-buttonpane button:first', {
 
 //Set focus of textbox depending on what accordion is being shown
 $("#accordion1").on("shown.bs.collapse", function () {
-	$("#collectionName").focus(); 
+	$("#collectionName").focus();
 });
 
 $("#accordion2").on("shown.bs.collapse", function () {
-	$("#datasetName").focus(); 
+	$("#datasetName").focus();
 });
 
-$(".newDS").on('click', function() { 
-	$("#fileSubmit").hide(); 
+$(".newDS").on('click', function() {
+	$("#fileSubmit").hide();
 });
 
-$(".existingDS").on('click', function() { 
+$(".existingDS").on('click', function() {
 	//if there is a value for a selection then show the file panel
 	if ($("#datasets").val() != "" && $("#datasets").val() != null){
-		$("#fileSubmit").show(); 
+		$("#fileSubmit").show();
 	}
 });
 
-$(".dsNewPanel").on('click', function() { 
-	$(".collapse3").hide(); 
-	$(".collapse4").show(); 
+$(".dsNewPanel").on('click', function() {
+	$(".collapse3").hide();
+	$(".collapse4").show();
 });
 
-$(".dsPanel").on('click', function() { 
-	$(".collapse4").hide(); 
-	$(".collapse3").show(); 
+$(".dsPanel").on('click', function() {
+	$(".collapse4").hide();
+	$(".collapse3").show();
 });
 
 function getCurrentSelectedCollection(){
@@ -107,24 +107,24 @@ function getCurrentSelectedCollection(){
 $("#datasets").change(function() {
 	setDatasetID = $("#datasets").val();
 	var newUrl = clowderURL+"uploadToDataset/"+setDatasetID+"";
-	uploadObj.update({url:newUrl});	 
-	$("#fileSubmit").removeClass("hidden");					
-	$("#fileSubmit").show("slow"); 
-});	
+	uploadObj.update({url:newUrl});
+	$("#fileSubmit").removeClass("hidden");
+	$("#fileSubmit").show("slow");
+});
 
 $("#datasets").select(function() {
-	$("#fileSubmit").removeClass("hidden");					
-	$("#fileSubmit").show("slow"); 
-});	
+	$("#fileSubmit").removeClass("hidden");
+	$("#fileSubmit").show("slow");
+});
 
 $(".dsNewPanel").click(function(){
-	$("#fileSubmit").hide("slow"); 
+	$("#fileSubmit").hide("slow");
 });
 
 $("#rootCollection").click(function(){
 	$("#formGetDatasets").hide("slow");
-	$("#collections").jstree("deselect_all");	
-}); 
+	$("#collections").jstree("deselect_all");
+});
 
 $('.panel-heading a').on('click',function(e){
     if($(this).parents('.panel').children('.panel-collapse').hasClass('in')){
@@ -139,26 +139,26 @@ function sortJsonDatasetName(a,b){
 };
 
 function setCurrentParentID(data, selectedText){
-	var currentParentId = data; 
-	postNestedCollection(currentParentId, selectedText); 
+	var currentParentId = data;
+	postNestedCollection(currentParentId, selectedText);
 }
 
 function findYoungestChild(selectedText){
 
     var arr = $("#collections").jstree("get_selected");
-    arr.pop(); 
+    arr.pop();
 	$.ajax({
 		url: baseURL+"t2c2/findYoungestChild",
-		type:"POST", 
+		type:"POST",
 		dataType: "json",
 		data: JSON.stringify({ ids: arr}),
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data) {
-			setCurrentParentID(data, selectedText); 
+			setCurrentParentID(data, selectedText);
 		}
 	});
 }
@@ -167,15 +167,15 @@ function findYoungestChild(selectedText){
 function getCollections(newCollectionID) {
 	$.ajax({
 		url: clowderURL+"collections/allCollections",
-		type:"GET", 		
+		type:"GET",
 		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data) {
-			$("#datasets").attr("disabled", "disabled");	
+			$("#datasets").attr("disabled", "disabled");
 			if (data.length > 0){
 
 				$(".showDanger").hide()
@@ -185,23 +185,23 @@ function getCollections(newCollectionID) {
 				createJSTrees(data, newCollectionID);
 
 			}else{
-				
-				$(".showDanger").removeClass("hidden");					
+
+				$(".showDanger").removeClass("hidden");
 				$(".showDanger").show()
 				$(".showInfo").hide()
 				$(".showSearch").hide()
 
-			}		
-		}, 
+			}
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem connecting to the server",
 			  type: "error",
 			  timer: 2500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 	});
 
 }
@@ -226,7 +226,7 @@ function createJSTrees(jsonData, newCollectionID) {
 	   		var str = "";
 
 	    	str = jsonData[i].parent.replace(/[List()]+/gi, '');
-	    	jsonData[i].parent = str; 
+	    	jsonData[i].parent = str;
 	   	}
 
 	   	//For new root collections where the json requires a root parent to have a value of #
@@ -237,14 +237,14 @@ function createJSTrees(jsonData, newCollectionID) {
 	}
 
 	//jstree initialization and settings
-	$('#collections').jstree({ 
+	$('#collections').jstree({
 
 		"core" : {
             "check_callback" : true,
         	"data" : jsonData,
 			"multiple" : false,
 			"themes" : {
-			  "variant" : "large", 
+			  "variant" : "large",
 			  "stripes" : true
 			},
 			"search": {
@@ -253,7 +253,7 @@ function createJSTrees(jsonData, newCollectionID) {
 	        },
 
 		},
-		"contextmenu":{         
+		"contextmenu":{
 		    "items": function($node) {
 		        var tree = $("#collections").jstree(true);
 		        return {
@@ -261,8 +261,8 @@ function createJSTrees(jsonData, newCollectionID) {
 		                "separator_before": false,
 		                "separator_after": false,
 		                "label": "Create New ",
-						"icon" : "glyphicon glyphicon-plus",	                
-		                "action": function (obj) { 
+						"icon" : "glyphicon glyphicon-plus",
+		                "action": function (obj) {
 		                    $node = tree.create_node($node);
 		                    tree.edit($node);
 		                }
@@ -271,20 +271,20 @@ function createJSTrees(jsonData, newCollectionID) {
 		    }
 		},
 		"checkbox": {
-            "keep_selected_style": false, 
+            "keep_selected_style": false,
             "three_state": false
 
-		}, 
+		},
 		"plugins" : [
 			"checkbox",
-			"contextmenu", 
-			"massload", 
-			"search", 
-			"sort", 
-			"types", 
-			"unique", 
-			"wholerow", 
-			"changed", 
+			"contextmenu",
+			"massload",
+			"search",
+			"sort",
+			"types",
+			"unique",
+			"wholerow",
+			"changed",
 			"conditionalselect"
 		],
 
@@ -296,39 +296,39 @@ function createJSTrees(jsonData, newCollectionID) {
 	});
 
 	$("#collections").on("rename_node.jstree", function (e, data) {
-			$('#collections').jstree(true).check_node(data.node.id);	
-			var selectedText = data.node.text;  
-			findYoungestChild(selectedText); 
+			$('#collections').jstree(true).check_node(data.node.id);
+			var selectedText = data.node.text;
+			findYoungestChild(selectedText);
 	});
 
 	$("#collections").on("select_node.jstree", function(e, data){
-		 
-			var str = data.node.id;  
+
+			var str = data.node.id;
 			var res = str.match(/J/gi);
 		 	//Prevents loading dataset for sub-collections that have no dataset yet
 		 	if (res != "j"){
-			 	getDatasets(data.node.id, ''); 
+			 	getDatasets(data.node.id, '');
 		 	}
-			$("#fileSubmit").hide(); 
+			$("#fileSubmit").hide();
 
 			//not in other code
-			$("#formGetDatasets").removeClass("hidden");					
-			$("#formGetDatasets").show(); 
+			$("#formGetDatasets").removeClass("hidden");
+			$("#formGetDatasets").show();
 		 	$(".validCollection").hide();
 	});
 
 	$("#collections").on("deselect_node.jstree", function(e, data){
-		$("#datasets").attr("disabled", "disabled");	
-		$("#datasets").empty(); 
-		$("#fileSubmit").hide(); 
-		$("#formGetDatasets").hide(); 
+		$("#datasets").attr("disabled", "disabled");
+		$("#datasets").empty();
+		$("#fileSubmit").hide();
+		$("#formGetDatasets").hide();
 	});
 
 	$("#collections").on("changed.jstree", function(e, data){
-		$("#fileSubmit").hide("slow"); 
-	});	
+		$("#fileSubmit").hide("slow");
+	});
 
-}    
+}
 
 //Get datasets
 function getDatasets(collectionID, datasetID) {
@@ -336,72 +336,72 @@ function getDatasets(collectionID, datasetID) {
 
 	$.ajax({
 		url: clowderURL+'collections/' + collectionID + '/getDatasets',
-		type:"GET", 		
+		type:"GET",
 		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data) {
 			data = $(data).sort(sortJsonDatasetName);
 
 			$.each(data, function(key, val) {
 				$("#datasets").append($("<option class="+collectionID+"></option>").val(val.id).html(val.name));
-			}); 
+			});
 
 			$("#datasets").val(datasetID);
 			setDatasetID = datasetID;
 			var newUrl = clowderURL+"uploadToDataset/"+setDatasetID+"";
-			uploadObj.update({url:newUrl});	    
+			uploadObj.update({url:newUrl});
 
 			var len = $('#datasets option').length;
 
-			$("#collections").removeClass( "focusedInput" );					
+			$("#collections").removeClass( "focusedInput" );
 
 			if (len > 0){
 				//OPTIONAL
 				$('#datasets').removeAttr('disabled');
-				$('#datasets').addClass( "focusedInput" );	
+				$('#datasets').addClass( "focusedInput" );
 
 			}else{
 
 				//OPTIONAL
-			   	$('#datasets').attr("disabled", "disabled");	
+			   	$('#datasets').attr("disabled", "disabled");
 				$('#datasets').css({'background':''});
 			}
 
-		}, 
+		},
 		error: function(xhr, status, error) {
-		}	
+		}
 	});
 
-} 
+}
 
 //TEMPLATES
 function getTemplates() {
 	$.ajax({
 
 		url: baseURL+"t2c2/templates/listExperimentTemplates",
-		type:"GET", 
-		dataType: "json",		
+		type:"GET",
+		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			showTemplates(data); 
-		}, 
+			showTemplates(data);
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem returning custom templates",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 	})
 
 }
@@ -410,25 +410,25 @@ function getPublicTemplates() {
 	$.ajax({
 
 		url: baseURL+"t2c2/templates/getPublic",
-		type:"GET", 
-		dataType: "json",		
+		type:"GET",
+		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			showGlobalTemplates(data); 
-		}, 
+			showGlobalTemplates(data);
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem returning custom templates",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 	})
 
 }
@@ -436,91 +436,91 @@ function getPublicTemplates() {
 function getTemplate(id){
 	$.ajax({
 		url: baseURL+"t2c2/templates/getExperimentTemplateById/"+id+"",
-		type:"GET", 
+		type:"GET",
 		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			createBoxes(data); 
-		}, 
+			createBoxes(data);
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem returning global templates",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
-	})	 
+		}
+	})
 }
 
 //Load Previous Datasets
 function getPreviousDatasets(){
-	var numberOfDatasetsToShows = 10; 
+	var numberOfDatasetsToShows = 10;
 	$.ajax({
 
 		url: baseURL + "t2c2/templates/lastTemplate", // + numberOfDatasetsToShows + "",
-		type:"GET", 
+		type:"GET",
 		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			showPreviousDatasets(data); 
-		}, 
+			showPreviousDatasets(data);
+		},
 		error: function(xhr, status, error) {
-		}	
-	})	 
+		}
+	})
 }
 
 function getPreviousDataset(id){
 	$.ajax({
 
 		url: baseURL + "t2c2/datasets/getDatasetAndTemplate/" + id + "",
-		type:"GET", 
+		type:"GET",
 		dataType: "json",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			createBoxesForPreviousDataset(data); 
-		}, 
+			createBoxesForPreviousDataset(data);
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem returning previous datasets",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
-	})	 
+		}
+	})
 }
 
 //Load user templates
 function showTemplates(data) {
 	$.each(data, function(key, val) {
 		$(".templates").append($("<option class='placeholder'></option>").val(val.id).html(val.name));
-	}); 
-	
-	$(".templates").focus(); 	
+	});
+
+	$(".templates").focus();
 }
 
 //Load user templates
 function showGlobalTemplates(templatesData) {
 	$.each(templatesData, function(key, val) {
 		$(".globalTemplates").append($("<option class='placeholder'></option>").val(val.id).html(val.name));
-	}); 
+	});
 
-	$(".globalTemplates").focus(); 	
+	$(".globalTemplates").focus();
 }
 
 function showTagTemplates(data){
@@ -528,18 +528,18 @@ function showTagTemplates(data){
 	$('<option>').val('').text('--Select One--').appendTo('.tagTemplates');
 	$.each(data, function(key, val) {
 		$(".tagTemplates").append($("<option class='placeholder'></option>").val(val.template_id).html(val.name));
-	}); 
-	
-	$(".tagTemplates").focus(); 	
+	});
+
+	$(".tagTemplates").focus();
 }
 
 function showPreviousDatasets(data) {
 	$('<option>').val('').text('--Select One--').appendTo('.prevTemplates');
 	$.each(data, function(key, val) {
 		$(".prevTemplates").append($("<option class='placeholder'></option>").val(val.attached_dataset).html(val.name));
-	}); 
-	
-	$(".prevTemplates").focus(); 	
+	});
+
+	$(".prevTemplates").focus();
 }
 
 function getAllTags(){
@@ -547,58 +547,58 @@ function getAllTags(){
 	var url = baseURL+"t2c2/templates/allTags";
 	$.ajax({
 		url: url,
-		type:"GET", 
+		type:"GET",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
 
-			//Format the object by removing whitespace, duplicates, and capitalize characters. 
-			var showUserTags = data.join(","); 
-			var allCapsTags = showUserTags.toUpperCase(); 
+			//Format the object by removing whitespace, duplicates, and capitalize characters.
+			var showUserTags = data.join(",");
+			var allCapsTags = showUserTags.toUpperCase();
 			var trimTags = $.map(allCapsTags.split(","), $.trim);
-			var uniqueTags = jQuery.unique(trimTags);	
+			var uniqueTags = jQuery.unique(trimTags);
 			$(".templateSearch").autocomplete({
 				source: uniqueTags,
 				select: function (event, ui) {
-					$(".tagTemplates").empty(); 
-					$(".tagData").show(); 
+					$(".tagTemplates").empty();
+					$(".tagData").show();
 
-					 var selectedObj = ui.item;  
+					 var selectedObj = ui.item;
 					 getByTagId(selectedObj.value);
-				}, 
+				},
 				change: function( event, ui ) {
 
-				}				
-			}); 
+				}
+			});
 		}
 
-	}); 
+	});
 }
 
 function getByTagId(tagId){
 	var url = baseURL+"t2c2/getIdNameFromTag/"+tagId+"";
 	$.ajax({
 		url: url,
-		type:"GET", 
+		type:"GET",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
-			$(".tagData").show(); 
-			// $(".otherOptions").hide(); 
+			$(".tagData").show();
+			// $(".otherOptions").hide();
 			if (data.length){
-				showTagTemplates(data);	
+				showTagTemplates(data);
 			}else{
 
 			}
 		}
 
-	}); 
+	});
 }
 
 function createBoxes(data){
@@ -613,9 +613,9 @@ function createBoxes(data){
         var div = $("<div />");
         div.html(createDiv(val.key, val.default_value, val.units, val.data_type, val.required));
         $(menuName + ' ' + ".templateData").append(div);
-	}); 
+	});
 
-	disableRequiredInput(); 
+	disableRequiredInput();
 
 }
 
@@ -626,14 +626,14 @@ function createBoxesForPreviousDataset(data){
 	$(".btnAdd").show();
   	$("#btnTemplate").show();
   	$(".prevOptions").show();
-  	
+
 	$.each(data.template.terms, function(i, val) {
 		var div = $("<div />");
         div.html(createDiv(val.key, val.default_value, val.units, val.data_type, val.required));
 		$("#prevMenu .templateData").append(div);
-	}); 
+	});
 
-	disableRequiredInput(); 
+	disableRequiredInput();
 
 }
 
@@ -643,13 +643,13 @@ function clearTemplate(){
 	$(".prevOptions").hide();
 	$(".btnDataset").hide();
 	$("#btnTemplate").hide();
-	$(".templates").focus(); 
+	$(".templates").focus();
 	$(".templates").val("");
 	$(".prevTemplates").val("");
 	$(".globalTemplates").val("");
-	$(".templateSearch").val(""); 
-	$(".tagTemplates").val(""); 
-	$(".tagData").hide(); 
+	$(".templateSearch").val("");
+	$(".tagTemplates").val("");
+	$(".tagData").hide();
 	counter1.reset();
 
 }
@@ -658,31 +658,31 @@ function clearTemplate(){
 $(".clearTemplate").click(function(e){
     e.preventDefault();
     e.stopPropagation();
-    clearTemplate(); 
+    clearTemplate();
 });
 
 //When advanced or create tabs are selected, clear and then get user templates
 $(".custMenu, .createMenu, .prevMenu").click(function(){
 	$(".btnDataset").hide();
 	$(".prevOptions").hide();
-	$(".showTemplates").show(); 
-	$(".showGlobalTemplates").show(); 
+	$(".showTemplates").show();
+	$(".showGlobalTemplates").show();
 
-	$(".templates").empty(); 
-	$(".globalTemplates").empty(); 
-	$(".prevTemplates").empty(); 	
-	$(".tagTemplates").empty(); 
+	$(".templates").empty();
+	$(".globalTemplates").empty();
+	$(".prevTemplates").empty();
+	$(".tagTemplates").empty();
 	$("#btnTemplate").hide();
 	$('<option>').val('').text('--Select One--').appendTo('.templates');
 	$('<option>').val('').text('--Select One--').appendTo('.globalTemplates');
-	$(".tagData").hide(); 
+	$(".tagData").hide();
 
-	$(".metaDataSettings").empty(); 	
-	$(".templateData").empty(); 
+	$(".metaDataSettings").empty();
+	$(".templateData").empty();
 
 	getTemplates();
-	getPublicTemplates(); 
-	getPreviousDatasets(); 	
+	getPublicTemplates();
+	getPreviousDatasets();
 });
 
 //Run when basic tab is selected
@@ -694,10 +694,10 @@ $(".clearMenu").click(function(){
 
 //Handle template load when new menu item is selected
 $(".templates").change(function(){
-	var id = $(this).val(); 
+	var id = $(this).val();
 
 	$(".tagTemplates").val([]);
-	$(".tagData").hide(); 
+	$(".tagData").hide();
 	$(".globalTemplates").val([]);
 	$(".templateSearch").val('');
 
@@ -707,11 +707,11 @@ $(".templates").change(function(){
 });
 
 $(".globalTemplates").change(function(){
-	var id = $(this).val(); 
+	var id = $(this).val();
 
 	$(".templates").val([]);
 	$(".tagTemplates").val([]);
-	$(".tagData").hide(); 
+	$(".tagData").hide();
 	$(".templateSearch").val('');
 	if (id != ''){
 		getTemplate(id);
@@ -719,7 +719,7 @@ $(".globalTemplates").change(function(){
 });
 
 $(".prevTemplates").change(function(){
-	var id = $(this).val(); 
+	var id = $(this).val();
 
 	if (id != ''){
 		getPreviousDataset(id);
@@ -727,7 +727,7 @@ $(".prevTemplates").change(function(){
 });
 
 $(".tagTemplates").change(function(){
-	var id = $(this).val(); 
+	var id = $(this).val();
 
 	$(".templates").val([]);
 	$(".globalTemplates").val([]);
@@ -746,39 +746,39 @@ $(".clearMenu").click(function(){
 //Create a new template
 $("#btnTemplate").on('click', function(e) {
 
-	datasetRequireAll(); 
-	datasetRequiredFields(); 
+	datasetRequireAll();
+	datasetRequiredFields();
 
 	if ($("#formGetDatasets").valid()){
-		postTemplate(true, ''); 
+		postTemplate(true, '');
 	}
 
-}); 
+});
 
 //Posts new template
 function postTemplate(templateType, datasetID){
 	var menuName = $('.nav-tabs .active > a').attr("href");
-	var templateTerms = buildTemplate(menuName); 
-	var tagName = $('.tagName').val().toUpperCase(); 
+	var templateTerms = buildTemplate(menuName);
+	var tagName = $('.tagName').val().toUpperCase();
 	var shareTemplate = $('#checkShareTemplate').is(":checked");
-    var datasetName = $("" + menuName + " .datasetName").val(); 
-    var templateType = templateType.toString(); 
+    var datasetName = $("" + menuName + " .datasetName").val();
+    var templateType = templateType.toString();
 	$.ajax({
 		url: baseURL+"t2c2/templates/createExperimentTemplateFromJson?isPublic="+shareTemplate+"",
-		type:"POST", 
+		type:"POST",
 		data: JSON.stringify({ name: datasetName, terms: templateTerms, tags: tagName, master: templateType}),
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		success: function(data){
 
 
 			if (templateType === "false"){
 
 				swal({
-				  title: "Success", 
+				  title: "Success",
 				  text: "A new dataset was created",
 				  type: "success",
 				  timer: 1500,
@@ -789,7 +789,7 @@ function postTemplate(templateType, datasetID){
 				addTemplateToDataset(datasetID, data.id);
 			}else{
 				swal({
-				  title: "Success", 
+				  title: "Success",
 				  text: "A new template was created",
 				  type: "success",
 				  timer: 1500,
@@ -799,28 +799,28 @@ function postTemplate(templateType, datasetID){
 			}
 			$(".templateData").empty();
 			$(".metaDataSettings").empty();
-			$(".templates").empty(); 	
-			$(".globalTemplates").empty(); 	
+			$(".templates").empty();
+			$(".globalTemplates").empty();
 			$("#btnTemplate").hide();
-			$(".datasetName").val(''); 
-			$(".tagName").val(''); 
-			$('#checkShareTemplate').prop('checked', false); 
+			$(".datasetName").val('');
+			$(".tagName").val('');
+			$('#checkShareTemplate').prop('checked', false);
 			$('<option>').val('').text('--Select One--').appendTo('.templates');
 			$('<option>').val('').text('--Select One--').appendTo('.globalTemplates');
 
 			$("#otherOptions").hide();
-			getTemplates();			
-			getPublicTemplates(); 
-		}, 
+			getTemplates();
+			getPublicTemplates();
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem creating this template",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 	})
 }
 
@@ -831,16 +831,16 @@ function postRootCollection() {
 
 	$.ajax({
 		url: clowderURL+"collections",
-		type:"POST", 
+		type:"POST",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		data: JSON.stringify({ name: collectionName, description: collectionDescription}),
 		success: function(data){
 			swal({
-			  title: "Success", 
+			  title: "Success",
 			  text: "A new collection was created",
 			  type: "success",
 			  timer: 1500,
@@ -849,29 +849,29 @@ function postRootCollection() {
 			$("#collectionName").val('');
 			$("#collectionDescription").val('');
 			$("#collections").empty();
- 			$("#datasets").empty(); 
-			$("#formGetDatasets").show(); 
+ 			$("#datasets").empty();
+			$("#formGetDatasets").show();
 			$('#collapse2').collapse('hide');
 			$('#collapse1').collapse('show');
 
  			var newCollectionID = data.id
 
-			//recreate tree	
+			//recreate tree
  			$("#collections").jstree("destroy");
-			getCollections(newCollectionID); 
+			getCollections(newCollectionID);
 
-	}, 
+	},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem creating the collection",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 	})
-} 
+}
 
 
 //Create NEW nested collection
@@ -880,82 +880,82 @@ function postNestedCollection(parentId, nestedCollectionName) {
 
 	 $.ajax({
 		url: clowderURL+"collections/newCollectionWithParent",
-		type:"POST", 
+		type:"POST",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
         	xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		data: JSON.stringify({ name: nestedCollectionName, description: nestedCollectionDescription, parentId: parentId }),
-		
+
 		success: function(data){
 
 			swal({
-			  title: "Success", 
+			  title: "Success",
 			  text: "A new sub collection was created",
 			  type: "success",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
 
-			//recreate tree	
+			//recreate tree
  			$("#collections").jstree("destroy");
  			var newCollectionID = data.id
-			getCollections(newCollectionID); 
+			getCollections(newCollectionID);
 
-		}, 
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem creating the sub collection",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}		
+		}
 	})
-} 
+}
 
 //Create NEW dataset
 function postDatasets() {
 
 	var menuName = $('.nav-tabs .active > a').attr("href");
-	var datasetDescription = $("" + menuName + " .datasetDescription").val(); 
-    var datasetName = $("" + menuName + " .datasetName").val(); 
-	var currentNodeId = getCurrentSelectedCollection();     
+	var datasetDescription = $("" + menuName + " .datasetDescription").val();
+    var datasetName = $("" + menuName + " .datasetName").val();
+	var currentNodeId = getCurrentSelectedCollection();
 	$.ajax({
 		url:clowderURL+"datasets/createempty",
-		type:"POST", 
+		type:"POST",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		data: JSON.stringify({ name: datasetName, description: datasetDescription, authorId: author, collection: currentNodeId}),
 		success: function(data){
 
 			 if (menuName = "#basicMenu"){
-				 postTemplate(false, data.id);	
-				 getDatasets(currentNodeId, data.id); 
+				 postTemplate(false, data.id);
+				 getDatasets(currentNodeId, data.id);
 				 $('#collapse4').collapse('hide');
 				 $('#collapse3').collapse('show');
 				 $('#datasets').empty();
 				 $('.datasetDescription').val('');
 			     $(".templateData").empty();
-			     $(".metaDataSettings").empty();	
-				 $("#fileSubmit").removeClass("hidden");					
-			     $("#fileSubmit").show("slow"); 
-			     $(".prevOptions").hide(); 
-				 $('.datasetName').val('');			 
+			     $(".metaDataSettings").empty();
+				 $("#fileSubmit").removeClass("hidden");
+			     $("#fileSubmit").show("slow");
+			     $(".prevOptions").hide();
+				 $('.datasetName').val('');
 				 $('.nav-tabs a:first').tab('show')
 
-			 }else{	
+			 }else{
 
-				 var selectedMenu; 
+				 var selectedMenu;
 				 var templateLength = ($(menuName + " .templates option").length);
 				 var globalTemplateLength = ($(menuName + " .globalTemplates option").length);
 				 var tagTemplateLength = ($(menuName + " .tagTemplates option").length);
-				 
+
 				 if ($(templateLength > 1)){
 				 	selectedMenu = " .templates";
 				 }else if ($(globalTemplateLength > 1)){
@@ -967,60 +967,60 @@ function postDatasets() {
 				 }
 				 addTemplateToDataset(data.id, $("" + selectedMenu + "").val());
 
-				 getDatasets(currentNodeId, data.id); 
+				 getDatasets(currentNodeId, data.id);
 
 				 $('#collapse4').collapse('hide');
 				 $('#collapse3').collapse('show');
 				 $('#datasets').empty();
 				 $('.datasetDescription').val('');
 			     $(".templateData").empty();
-			     $(".metaDataSettings").empty();	
-				 $("#fileSubmit").removeClass("hidden");					
-			     $("#fileSubmit").show("slow"); 
-			     $(".prevOptions").hide(); 
-				 $('.datasetName').val('');			 
+			     $(".metaDataSettings").empty();
+				 $("#fileSubmit").removeClass("hidden");
+			     $("#fileSubmit").show("slow");
+			     $(".prevOptions").hide();
+				 $('.datasetName').val('');
 				 $('.nav-tabs a:first').tab('show')
 
 				}
-		}, 
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem creating the dataset",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
-		}	
+		}
 
 
 	})
-} 
+}
 
 function addTemplateToDataset(datasetid, templateID){
-	var url = baseURL+ "t2c2/templates/" + templateID + "/attachToDataset/" + datasetid + ""; 
+	var url = baseURL+ "t2c2/templates/" + templateID + "/attachToDataset/" + datasetid + "";
 	$.ajax({
 		url: url,
-		type:"PUT", 
+		type:"PUT",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		data: JSON.stringify({ template_id: templateID, dataset_id: datasetid}),
 		success: function(data){
 
-		}, 
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem creating this dataset",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
 		}
-	
+
 	})
 
 }
@@ -1030,26 +1030,26 @@ function addFileDescription(id, comments){
 	var url = baseURL+"t2c2/files/"+id+"/updateDescription";
 	$.ajax({
 		url: url,
-		type:"PUT", 
+		type:"PUT",
 		beforeSend: function(xhr){
-			xhr.setRequestHeader("Content-Type", "application/json"); 
+			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-		}, 
+		},
 		data: JSON.stringify({ description: comments}),
 		success: function(data){
 
-		}, 
+		},
 		error: function(xhr, status, error) {
 			swal({
-			  title: "Error", 
+			  title: "Error",
 			  text: "There was a problem adding the comments to the file",
 			  type: "error",
 			  timer: 1500,
 			  showConfirmButton: false
 			});
 		}
-	
+
 	})
 
 }
@@ -1062,72 +1062,66 @@ $(function(){
 		    autoSubmit:false,
 		    showPreview:false,
 		    previewHeight: "100px",
-		    previewWidth: "100px",    
+		    previewWidth: "100px",
 		    dragDrop:true,
 		    fileName: "File",
-		    allowedTypes:"*",	
+		    allowedTypes:"*",
 		    returnType:"json",
 		    showDelete:false,
 		    dragdropWidth: "650px",
-			maxFileCount: 110, 	
-			showProgress: true, 
+			maxFileCount: 110,
+			showProgress: true,
 			extraHTML:function()
 			{
 			    	var html = "<div><b>File Comments:</b><br /><textarea class='form-control fileComments'></textarea> <br/>";
 					// html += "<b>Success?</b>:<br /><select name='experimentSuccess' class='form-control'><option value=''>--Select One</option><option value='success'>Success</option><option value='failure'>Failure</option></select>";
 					html += "</div><br />";
-					return html;    		
-			},			
+					return html;
+			},
 			onSuccess:function(files,data,xhr,pd){
 				swal({
-				  title: "Success", 
+				  title: "Success",
 				  text: "Your files were uploaded",
 				  type: "success",
 				  timer: 1500,
 				  showConfirmButton: false
-				});			
+				});
 
 				hideDivs();
 				$('#collections').jstree("deselect_all");
 
-				$.each(fileDict, function(key, value){
-					if (key == files){
-						addFileDescription(data.id, value);
-					} 
-				});
-
-				counter--; 
+				counter--;
 
 			    uploadObj.reset();
-			    $("#datasets").empty(); 				
+			    $("#datasets").empty();
 
-			}, 
+			},
 			onError: function(files,status,errMsg,pd){
 				swal({
-				  title: "Error", 
+				  title: "Error",
 				  text: "Your files were not uploaded",
 				  type: "error",
 				  timer: 1500,
 				  showConfirmButton: false
-				});				
-			},		
+				});
+			},
 			onSelect:function(files)
 			{
 			    return true; //to allow file submission.
 			},
-			beforeSend: function() 
+			beforeSend: function()
 			{
-			 
+
 			},
 		    deleteCallback: function(data,pd) {
 			    for(var i=0;i<data.length;i++) {
 			        $.post("delete.php",{op:"delete",name:data[i]},
 			        function(resp, textStatus, jqXHR) {
-			            //Show Message  
-			            $("#status").append("<div>File Deleted</div>");      
+			            //Show Message
+			            $("#status").append("<div>File Deleted</div>");
 			        });
-			     }      
-			    pd.statusbar.hide(); 
+			     }
+			    pd.statusbar.hide();
 			}
 		}
 
@@ -1142,7 +1136,7 @@ $("#btnSubmit").on('click', function() {
 
 	$("#formGetDatasets").valid();
 
-	//work around for jstree validation 
+	//work around for jstree validation
 	var numSelections = $("#collections").jstree("get_selected");
 
 	if (numSelections.length == 0){
@@ -1151,24 +1145,24 @@ $("#btnSubmit").on('click', function() {
 	}
 
 	//if we have files then turn off file requirement validation
-	numFiles = $('.ajax-file-upload-statusbar').length;	 
+	numFiles = $('.ajax-file-upload-statusbar').length;
 	if (numFiles == 0){
 		$("#formUpload").valid();
 	}
 
 	if ($("#formGetDatasets").valid()){
 
-		//was a dataset selected or created? 
+		//was a dataset selected or created?
 		//This has to be done first before a fileload, since we need the datasetid
 		if (setDatasetID != '' && setDatasetID != null){
-			$(".alert").hide(); 
+			$(".alert").hide();
 			comments = $(".fileComments");
-            filenames = $(".ajax-file-upload-filename"); 
-            fileDict = {}; 
+            filenames = $(".ajax-file-upload-filename");
+            fileDict = {};
             for (i = 0; i < numFiles; i++){
             	var key = $(filenames[i]).text();
             	var val = $(comments[i]).val();
-            	fileDict[key.trimLeft()] = val; 
+            	fileDict[key.trimLeft()] = val;
             }
 
 			counter = numFiles - 1;
@@ -1178,17 +1172,17 @@ $("#btnSubmit").on('click', function() {
 		}
 	 }
 
-});	
+});
 
 //Removes previous error messages when a new tab is selected
 $(".custMenu, .createMenu, .clearMenu, .prevMenu").on('click', function() {
 	var validator = $("#formGetDatasets").validate();
 	validator.resetForm();
 	$("label.error").hide();
-    $(".error").removeClass("error");	
+    $(".error").removeClass("error");
 	counter1.reset();
 
-}); 
+});
 
 //Used to disable inputs in loaded template that are required
 function disableRequiredInput(){
@@ -1199,12 +1193,12 @@ function disableRequiredInput(){
 		$.each($('.requireField'), function(idx){
 
 			var currentId = (this.id);
-			var counter = currentId.match(/\d+/); 
+			var counter = currentId.match(/\d+/);
 
 			if ($(this).val() == "true") {
-				$("#metaDataKey" + counter).attr("disabled", true); 
-				$("#metaDataUnit" + counter).attr("disabled", true); 
-				$("#metaDataType" + counter).attr("disabled", true); 
+				$("#metaDataKey" + counter).attr("disabled", true);
+				$("#metaDataUnit" + counter).attr("disabled", true);
+				$("#metaDataType" + counter).attr("disabled", true);
 				$("#btnRemove" + counter).attr("disabled", true);
 				$("#requireField" + counter).attr("disabled", true);
 
@@ -1216,7 +1210,7 @@ function disableRequiredInput(){
 			// $("#metaDataUnit" + counter).attr("disabled", true);
 			// $("#metaDataType" + counter).attr("disabled", true);
 
-		}); 
+		});
 	 }
 }
 
@@ -1225,26 +1219,26 @@ $("#formGetDatasets").validate();
 $(".btnDataset").on('click', function(e) {
 
   	var menuName = $('.nav-tabs .active > a').attr("href");
-	var jsTreeValid = false; 
+	var jsTreeValid = false;
 
-	// work around for jstree validation 
+	// work around for jstree validation
 	var numSelections = $("#collections").jstree("get_selected");
 
 	if (numSelections.length == 0){
 		$(".validCollection").show();
-		jstreeValid = false; 
+		jstreeValid = false;
 	}else{
-		jstreeValid = true; 
+		jstreeValid = true;
 	}
 
-	datasetRequireAll(); 
-	datasetRequiredFields(); 
+	datasetRequireAll();
+	datasetRequiredFields();
 
 	if ($("#formGetDatasets").valid() && jstreeValid == true){
-		postDatasets(e); 
+		postDatasets(e);
 
 	}
-});	
+});
 
 //If row is required
 function datasetRequireAll(){
@@ -1254,38 +1248,38 @@ function datasetRequireAll(){
 		var menuName = $('.nav-tabs .active > a').attr("href");
 
 		var currentId = (this.id);
-		var counter = currentId.match(/\d+/); 
+		var counter = currentId.match(/\d+/);
 		if ($(this).val() == "true") {
 			$("#metaDataKey" + counter).rules('add', {
-				required: true, 
+				required: true,
 			    maxlength: 50
-			}); 
+			});
 			$("#metaDataUnit" + counter).rules('add', {
-				required: true, 
+				required: true,
 			    maxlength: 50
-			}); 
+			});
 			$("#metaDataType" + counter).rules('add', {
-				required: true, 
+				required: true,
 			    maxlength: 50
-			}); 
-	 		
+			});
+
 	 		if (menuName != "#createMenu"){
 
 				$("#metaDataVal" + counter).rules('add', {
-					required: true, 
+					required: true,
 				    maxlength: 50
-				}); 
+				});
 			}
 		}else{
 
-			$("#metaDataKey" + counter).rules("remove", "required"); 
-			$("#metaDataUnit" + counter).rules("remove", "required"); 
-			$("#metaDataType" + counter).rules("remove", "required"); 
-			$("#metaDataVal" + counter).rules("remove", "required"); 
+			$("#metaDataKey" + counter).rules("remove", "required");
+			$("#metaDataUnit" + counter).rules("remove", "required");
+			$("#metaDataType" + counter).rules("remove", "required");
+			$("#metaDataVal" + counter).rules("remove", "required");
 
 		}
 
-	}); 
+	});
 }
 
 //If a value has been added but dependent fields aren't filled out (key, unit, type)
@@ -1294,19 +1288,19 @@ function datasetRequiredFields(){
 		$.each($('.metaDataVal'), function(idx) {
 
 			var currentId = (this.id);
-			var counter = currentId.match(/\d+/); 
-			var currentElementValue = $(this).val(); 
+			var counter = currentId.match(/\d+/);
+			var currentElementValue = $(this).val();
 
 			if ($.trim(currentElementValue).length > 0) {
 
 				$("#metaDataKey" + counter).rules('add', {
-					required: true, 
+					required: true,
 				    maxlength: 50
-				}); 
+				});
 
 				$("#metaDataUnit" + counter).each(function () {
 				    $(this).rules('add', {
-				        required: true, 
+				        required: true,
 				        maxlength: 50
 				    });
 				});
@@ -1315,30 +1309,30 @@ function datasetRequiredFields(){
 				    $(this).rules('add', {
 				        required: true
 				    });
-				});	
+				});
 
-				var type = $("#metaDataType" + counter + " option:selected").val(); 
+				var type = $("#metaDataType" + counter + " option:selected").val();
 
 				switch(type){
 					case 'number':
 						$(this).rules('add', {
-							number: true, 
-		 					maxlength: 20					
-						}); 
+							number: true,
+		 					maxlength: 20
+						});
 					    $(this).rules('remove',"equals");
        					break;
 
 					case 'boolean':
 						$(this).rules('add', {
 							equals: ["true", "false"]
-						}); 
+						});
 					    $(this).rules('remove',"number");
         				break;
 
 					case 'string':
 						$(this).rules('add', {
 							maxlength: 50
-						}); 
+						});
 					    $(this).rules('remove',"number");
 					    $(this).rules('remove',"equals");
        					break;
@@ -1350,10 +1344,10 @@ function datasetRequiredFields(){
 
 }
 
-//Validate collections 
+//Validate collections
 $("#formGetCollections").validate({
     submitHandler: function() {
-		postRootCollection(); 
+		postRootCollection();
     }
 });
 
@@ -1407,8 +1401,8 @@ $(function() {
 		source: availableTags
 	});
 
-	getAllTags(); 
-	$(".tagData").hide(); 
+	getAllTags();
+	$(".tagData").hide();
 
 });
 
@@ -1418,24 +1412,24 @@ $(function () {
 		var metaDataTags = [
 			"Power",
 			"Element",
-			"Current", 
-			"Pressure", 
-			"Time", 
-			"Temperature", 
-			"Depth", 
-			"Lateral Depth", 
-			"Disorder Depth", 
-			"Tool", 
-			"Sample", 
-			"Spin", 
-			"RF", 
+			"Current",
+			"Pressure",
+			"Time",
+			"Temperature",
+			"Depth",
+			"Lateral Depth",
+			"Disorder Depth",
+			"Tool",
+			"Sample",
+			"Spin",
+			"RF",
 			"ICP",
 			"SFP",
-			"EBR", 
-			"Expose", 
-			"RIE", 
+			"EBR",
+			"Expose",
+			"RIE",
 			"PostExp Bake",
-			"Spin", 
+			"Spin",
 			"PreExp Bake"
 		];
 
@@ -1446,17 +1440,17 @@ $(function () {
 
 
         $(menuName + " .metaDataSettings").append(div);
-		$(".metaDataKey").first().focus(); 
-		$(".existingDS").show(); 
+		$(".metaDataKey").first().focus();
+		$(".existingDS").show();
 		$(".btnDataset").show();
 		$("#btnTemplate").show();
-		disableRequiredInput(); 
+		disableRequiredInput();
 
         //Call autocomplete on dynamically created textbox after it's created
-		$(".metaDataKey").autocomplete({ 
+		$(".metaDataKey").autocomplete({
 			source:metaDataTags
  		});
- 	});       
+ 	});
 
     $("body").on("click", ".remove", function () {
         $(this).closest(".top-buffer").remove();
@@ -1464,9 +1458,9 @@ $(function () {
 
 	$("body").keypress(function(e){
 	    if(e.which == 13){
-	        $(".metaDataVal").blur(); 
+	        $(".metaDataVal").blur();
 	    }
-	});    
+	});
 });
 
 //Search Plugin
@@ -1512,7 +1506,7 @@ function createDiv(keyName, val, units, dataType, requireField) {
     console.log(requireField);
   	var menuName = $('.nav-tabs .active > a').attr("href");
 
-  	//format text 
+  	//format text
     var txtToWrite = "";
 
     if (menuName == "#createMenu"){
@@ -1521,13 +1515,13 @@ function createDiv(keyName, val, units, dataType, requireField) {
     	txtToWrite = "Value: "
     }
 
-	var i = counter1.add();    
-    var txtString = dataType == "string" ? "<option value='string' selected>String</option>" : "<option value='string'>String</option>"; 
-    var txtNumber = dataType == "number" ? "<option value='number' selected>Number</option>" : "<option value='number'>Number</option>"; 
-    var txtBoolean = dataType == "boolean" ? "<option value='boolean' selected>Boolean</option>" : "<option value='boolean'>Boolean</option>"; 
+	var i = counter1.add();
+    var txtString = dataType == "string" ? "<option value='string' selected>String</option>" : "<option value='string'>String</option>";
+    var txtNumber = dataType == "number" ? "<option value='number' selected>Number</option>" : "<option value='number'>Number</option>";
+    var txtBoolean = dataType == "boolean" ? "<option value='boolean' selected>Boolean</option>" : "<option value='boolean'>Boolean</option>";
 
-    var txtTrue = requireField == "true" ? "<option value='true' selected>Yes</option>" : "<option value='true'>Yes</option>"; 
-    var txtFalse = requireField == "false" ? "<option value='false' selected>No</option>" : "<option value='false'>No</option>"; 
+    var txtTrue = requireField == "true" ? "<option value='true' selected>Yes</option>" : "<option value='true'>Yes</option>";
+    var txtFalse = requireField == "false" ? "<option value='false' selected>No</option>" : "<option value='false'>No</option>";
 
     return '<div class="row top-buffer"><div class="col-xs-3"><b>' + "<label for='name'>Name: " + '</b></label>' +
         '<input class="metaDataKey form-control" name="metaDataKey' + i + '" id="metaDataKey' + i + '" type="text" value=' + valKeyName.replace(/ /g,"&nbsp;") +'></div>' +
@@ -1537,9 +1531,9 @@ function createDiv(keyName, val, units, dataType, requireField) {
 
         '<div class="col-xs-2" style=""><b>' + "<label for='val'>Data Type: " + '</label></b>' +
         '<select class="metaDataType form-control" name="metaDataType' + i + '" id="metaDataType' + i + '" >' +
-        '' + txtString + '' + 
-        '' + txtNumber + '' + 
-        '' + txtBoolean + '' + 
+        '' + txtString + '' +
+        '' + txtNumber + '' +
+        '' + txtBoolean + '' +
         '</select></div>' +
 
         '<div class="col-xs-2" style="margin-left:-15px;"><b>' + "<label for='val'>"+ txtToWrite + '</b></label>' +
@@ -1547,13 +1541,13 @@ function createDiv(keyName, val, units, dataType, requireField) {
 
         '<div class="col-xs-2" style="margin-left:-15px;"><b>' + "<label for='val'>Required: " + '</label></b>' +
         '<select class="requireField form-control" name="requireField' + i + '" id="requireField' + i + '" >' +
-        '' + txtTrue + '' + 
-        '' + txtFalse + '' + 
+        '' + txtTrue + '' +
+        '' + txtFalse + '' +
         '</select></div>' +
 
         '<div class="col-xs-1" style="margin-left:-15px;"><b>' + "<label for='val'>&nbsp;" + '</label></b>' +
         '<input type="button" value="Remove" class="remove btn btn-danger btnRemove" name="btnRemove' + i + '" id="btnRemove' + i + '"></div></div>'
-        
+
 }
 
 $.validator.addMethod("equals", function(value, element, string) {
